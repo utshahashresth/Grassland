@@ -1,0 +1,251 @@
+/* ------------------------------------------------------------------ *
+ * Grassland Zen Retreat — Ops Platform design tokens
+ * Ported verbatim from the design system:
+ *   _ds/grassland-zen-retreat-ops-design-system-daf66ce9-.../tokens/*.css
+ * Never hardcode a colour, radius, shadow or font size that lives here.
+ * ------------------------------------------------------------------ */
+
+/* fonts.css — Fraunces (display) · DM Sans (UI) · IBM Plex Mono (data)
+ * The Google Fonts @import lives at the top of src/index.css so it precedes
+ * Tailwind's generated rules (an @import may not follow other rules). */
+
+/* colors.css */
+:root {
+  /* Matcha — primary. Muted, yellow-leaning matcha powder green. */
+  --matcha-50: #F4F6EC;
+  --matcha-100: #E6EBD3;
+  --matcha-200: #CBD8A8;
+  --matcha-300: #ACC17C;
+  --matcha-400: #8CA857;
+  --matcha-500: #6E8D3D;
+  --matcha-600: #55702E;
+  --matcha-700: #405423;
+  --matcha-800: #2D3B19;
+  --matcha-900: #1C2510;
+
+  /* Stone — rice-paper neutrals. Warm, slightly green-grey. Never pure grey/black. */
+  --stone-0: #FFFFFF;
+  --stone-50: #FAF9F4;
+  --stone-100: #F1EFE6;
+  --stone-200: #E3E0D2;
+  --stone-300: #CBC7B4;
+  --stone-400: #A8A493;
+  --stone-600: #6B6759;
+  --stone-800: #3A382F;
+  --stone-900: #24231D;
+
+  /* Functional accents — status only, must not compete with matcha. */
+  --turmeric-100: #F7E9C9;
+  --turmeric-500: #D69A2D;
+  --turmeric-600: #B27F1F;
+  --clay-100: #F3DFD5;
+  --clay-500: #B5502E;
+  --clay-600: #954126;
+  --slate-100: #DEE5EA;
+  --slate-500: #3F5568;
+  --slate-600: #324454;
+
+  /* Semantic aliases */
+  --surface-app: #F6FAF1;
+  --surface-page: var(--stone-100);
+  --surface-card: #FBFAF5;
+  --surface-tint: var(--matcha-50);
+  --surface-nav: var(--matcha-800);
+  --surface-nav-active: var(--matcha-700);
+  --surface-ticket-header: var(--matcha-700);
+  --surface-table-header: var(--stone-100);
+
+  --text-primary: var(--stone-900);
+  --text-heading: var(--stone-800);
+  --text-secondary: var(--stone-600);
+  --text-placeholder: var(--stone-400);
+  --text-inverse: var(--stone-50);
+  --text-link: var(--matcha-500);
+  --text-nav: var(--matcha-100);
+
+  --border-default: var(--stone-200);
+  --border-strong: var(--stone-300);
+  --border-dashed: var(--stone-300);
+  --border-tinted: var(--matcha-200);
+
+  --action-primary: var(--matcha-600);
+  --action-primary-hover: var(--matcha-700);
+  --action-secondary-text: var(--matcha-700);
+  --action-danger: var(--clay-500);
+  --action-danger-hover: var(--clay-600);
+  --action-disabled: var(--matcha-300);
+
+  /* Status: success deliberately reuses matcha — no second green exists. */
+  --status-ok-bg: var(--matcha-100);
+  --status-ok-fg: var(--matcha-700);
+  --status-ok-solid: var(--matcha-600);
+  --status-warn-bg: var(--turmeric-100);
+  --status-warn-fg: var(--turmeric-600);
+  --status-warn-solid: var(--turmeric-500);
+  --status-deny-bg: var(--clay-100);
+  --status-deny-fg: var(--clay-600);
+  --status-deny-solid: var(--clay-500);
+  --status-info-bg: var(--slate-100);
+  --status-info-fg: var(--slate-600);
+  --status-info-solid: var(--slate-500);
+  --status-idle-bg: var(--stone-200);
+  --status-idle-fg: var(--stone-600);
+  --status-idle-solid: var(--stone-400);
+}
+
+/* ------------------------------------------------------------------ *
+ * Dark theme. The retreat is a warm, rice-paper light design; dark
+ * mode keeps that warmth — the Stone neutral ramp is inverted to a
+ * warm green-grey charcoal, and the Matcha / Turmeric / Clay accent
+ * ramps are left untouched (brand + data-viz colours read on both).
+ * Only the semantic aliases that pulled from an accent's pale end,
+ * and the status pairs that need contrast, are re-pointed.
+ * `.dark` is set on <html> by src/retreat/theme.tsx.
+ * ------------------------------------------------------------------ */
+.dark {
+  color-scheme: dark;
+
+  /* Stone — inverted. Warm charcoal at the low end, warm bone at the top. */
+  --stone-0: #1E211A;
+  --stone-50: #15170F;
+  --stone-100: #23271D;
+  --stone-200: #32362A;
+  --stone-300: #434839;
+  --stone-400: #8B8776;
+  --stone-600: #A9A593;
+  --stone-800: #E7E4D8;
+  --stone-900: #F3F1E8;
+
+  /* Aliases that referenced an accent's pale end, plus the tinted-chip
+   * foreground (dark-green text is unreadable on a dark-green wash). */
+  --surface-tint: #20291A;
+  --border-tinted: #3A4A29;
+  --text-link: var(--matcha-300);
+  --action-secondary-text: var(--matcha-300);
+
+  /* Status — darker fills, lighter text for contrast on dark cards. */
+  --status-ok-bg: #29371C;
+  --status-ok-fg: var(--matcha-300);
+  --status-warn-bg: #342A16;
+  --status-warn-fg: #E4B45E;
+  --status-deny-bg: #362016;
+  --status-deny-fg: #E7A184;
+  --status-info-bg: #21303A;
+  --status-info-fg: #AEC7D6;
+  --status-idle-bg: #2C3025;
+
+  /* Elevation reads as depth, not haze, on dark surfaces. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.28);
+  --shadow-raised: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-inset-field: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* typography.css */
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-ui: "DM Sans", "Helvetica Neue", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Display — Fraunces. Names, villa titles, guest names. Never verification data. */
+  --type-h1-size: 52px;
+  --type-h1-weight: 500;
+  --type-h1-tracking: -0.01em;
+  --type-h1-leading: 1.08;
+  --type-h2-size: 28px;
+  --type-h2-weight: 600;
+  --type-h2-leading: 1.15;
+  --type-h3-size: 22px;
+  --type-h3-weight: 600;
+  --type-h3-leading: 1.2;
+  --type-card-title-size: 19px;
+  --type-card-title-weight: 600;
+  --type-card-title-leading: 1.25;
+
+  /* UI — DM Sans */
+  --type-body-size: 16px;
+  --type-body-weight: 400;
+  --type-body-leading: 1.5;
+  --type-body-sm-size: 14px;
+  --type-body-sm-leading: 1.45;
+  --type-ui-label-size: 14px;
+  --type-ui-label-weight: 600;
+  --type-micro-size: 11px;
+  --type-micro-weight: 600;
+  --type-micro-tracking: 0.06em;
+
+  /* Mono — verification data only: codes, IDs, timestamps, counts */
+  --type-mono-size: 13px;
+  --type-mono-weight: 500;
+  --type-mono-tracking: 0.01em;
+  --type-mono-sm-size: 11.5px;
+  --type-mono-lg-size: 16px;
+
+  --opsz-display: 48;
+  --opsz-title: 24;
+}
+
+/* spacing.css */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-18: 72px;
+  --pad-card: 20px;
+  --pad-card-lg: 24px;
+  --gap-app: 16px;
+  --gap-app-lg: 24px;
+  --gap-section: 56px;
+  --gap-section-lg: 72px;
+  /* Card / pass radii. (Button/badge/chip/field radius is driven by
+   * shadcn's --radius in src/index.css, which resolves to the same 6px.) */
+  --radius-card: 12px;
+  --radius-pass: 20px;
+  --radius-pill: 99px;
+  --touch-min: 44px;
+  --sidebar-w: 236px;
+  --pass-w: 320px;
+}
+
+/* elevation.css */
+:root {
+  --shadow-card: 0 1px 2px rgba(36, 35, 29, 0.06), 0 6px 20px rgba(36, 35, 29, 0.06);
+  --shadow-raised: 0 2px 4px rgba(36, 35, 29, 0.08), 0 12px 32px rgba(36, 35, 29, 0.10);
+  --shadow-inset-field: inset 0 1px 2px rgba(36, 35, 29, 0.05);
+  --ring-focus: 0 0 0 3px rgba(85, 112, 46, 0.28);
+  --ease-standard: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 280ms;
+}
+
+/* base.css — element defaults.
+ * Wrapped in @layer base so Tailwind utilities (and shadcn component
+ * classes) always win over these. The design system's screens set
+ * typography explicitly, so only the ambient defaults live here. */
+@layer base {
+  ::selection {
+    background: var(--matcha-200);
+    color: var(--matcha-900);
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    /* DM Sans (UI) and Fraunces (display) both carry an optical-size axis;
+     * let the browser drive it from the rendered size. */
+    font-optical-sizing: auto;
+  }
+
+  code,
+  kbd,
+  .mono {
+    font-family: var(--font-mono);
+    letter-spacing: var(--type-mono-tracking);
+  }
+}
