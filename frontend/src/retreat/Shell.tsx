@@ -55,6 +55,24 @@ function ThemeToggle() {
   )
 }
 
+/* Sidebar item hover, adapted from Rafaela Lucas' "Simple Button Hover Effect"
+ * (dribbble.com/shots/6474612): the label opens its letter-spacing, tints to
+ * the matcha accent, and a rounded underline grows out from the centre. No
+ * background fill. Put this on a <span> wrapping the label text; the row it
+ * sits in must carry `group`. Colours/eases come from the retreat tokens. */
+const navLabel =
+  'relative inline-block pb-0.5 [transition:letter-spacing_var(--dur-base)_var(--ease-standard)] ' +
+  'after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[2px] after:w-0 after:-translate-x-1/2 ' +
+  'after:rounded-full after:bg-[var(--matcha-500)] dark:after:bg-[var(--matcha-300)] ' +
+  'after:[transition:width_var(--dur-base)_var(--ease-standard)] ' +
+  'group-hover:tracking-[0.02em] group-hover:text-[var(--action-secondary-text)] group-hover:after:w-full'
+
+/* Selected sidebar item: the same treatment, held open — accent text and the
+ * full-width underline stay regardless of hover. */
+const navLabelOn =
+  navLabel +
+  ' tracking-[0.02em] text-[var(--action-secondary-text)] after:w-full'
+
 type Badge = { count: number; tone: 'warn' | 'ok' }
 type SubItem = { key: string; label: string; to?: string; badge?: Badge }
 type NavItem = {
@@ -115,16 +133,9 @@ function CountBadge({ badge }: { badge: Badge }) {
 
 function SubRow({ item, active }: { item: SubItem; active: boolean }) {
   const className =
-    'group relative flex h-9 items-center gap-2 rounded-lg pr-2.5 pl-3 text-[13.5px] font-medium transition-colors' +
-    (active ? '' : ' hover:bg-[var(--matcha-300)]')
+    'group relative flex h-9 items-center gap-2 rounded-lg pr-2.5 pl-3 text-[13.5px] font-medium transition-colors'
   const style = active
-    ? {
-      background: 'var(--surface-card)',
-      color: 'var(--text-heading)',
-      boxShadow: 'var(--shadow-card)',
-      border: '1px solid var(--border-default)',
-      height: '26px',
-    }
+    ? { color: 'var(--action-secondary-text)' }
     : { color: 'var(--text-secondary)' }
   const body = (
     <>
@@ -134,7 +145,9 @@ function SubRow({ item, active }: { item: SubItem; active: boolean }) {
           style={{ background: 'var(--border-strong)' }}
         />
       )}
-      <span className="flex-1 truncate group-hover:text-[var(--matcha-900)]">{item.label}</span>
+      <span className="flex-1 truncate">
+        <span className={active ? navLabelOn : navLabel}>{item.label}</span>
+      </span>
       {item.badge && <CountBadge badge={item.badge} />}
     </>
   )
@@ -159,37 +172,34 @@ function NavGroup({ item, active }: { item: NavItem; active: string }) {
   const [open, setOpen] = useState(groupActive)
 
   const rowClass =
-    'flex h-11 w-full items-center gap-[11px] rounded-md px-3.5 text-[14.5px] font-semibold transition-colors'
-  const hoverRow = `${rowClass} text-[var(--text-secondary)] hover:bg-[var(--matcha-300)] hover:text-[var(--matcha-900)]`
+    'group flex h-11 w-full items-center gap-[11px] rounded-md px-3.5 text-[14.5px] font-semibold transition-colors'
+  const hoverRow = `${rowClass} text-[var(--text-secondary)] hover:text-[var(--action-secondary-text)]`
 
   if (!item.children) {
     const on = item.key === active
     if (on) {
-      const style = {
-        background: 'var(--surface-tint)',
-        color: 'var(--action-secondary-text)',
-      }
+      const onClass = `${rowClass} text-[var(--action-secondary-text)]`
       return item.to ? (
-        <Link to={item.to} className={rowClass} style={style}>
+        <Link to={item.to} className={onClass}>
           <Icon name={item.icon} size={18} />
-          {item.label}
+          <span className={navLabelOn}>{item.label}</span>
         </Link>
       ) : (
-        <button type="button" className={rowClass} style={style}>
+        <button type="button" className={onClass}>
           <Icon name={item.icon} size={18} />
-          {item.label}
+          <span className={navLabelOn}>{item.label}</span>
         </button>
       )
     }
     return item.to ? (
       <Link to={item.to} className={hoverRow}>
         <Icon name={item.icon} size={18} />
-        {item.label}
+        <span className={navLabel}>{item.label}</span>
       </Link>
     ) : (
       <button type="button" className={hoverRow}>
         <Icon name={item.icon} size={18} />
-        {item.label}
+        <span className={navLabel}>{item.label}</span>
       </button>
     )
   }
@@ -206,7 +216,9 @@ function NavGroup({ item, active }: { item: NavItem; active: string }) {
         }
       >
         <Icon name={item.icon} size={18} />
-        <span className="flex-1 text-left">{item.label}</span>
+        <span className="flex-1 text-left">
+          {groupActive ? item.label : <span className={navLabel}>{item.label}</span>}
+        </span>
         <Icon
           name="chevronDown"
           size={15}

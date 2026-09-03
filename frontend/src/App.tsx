@@ -6,6 +6,7 @@ import { NewBooking, type NewBookingResult } from './retreat/NewBooking'
 import LoginPage from './retreat/Login/Page'
 import { ARRIVALS, VILLA_STATES, RULES, type BookingRow, type VillaState } from './retreat/data'
 
+
 /* Manager shell. Dashboard and new-booking form are now separate routes
  * (/ and /booking) instead of a `screen` state toggle. Booking list,
  * villa states and the confirmation banner stay lifted here so a
@@ -39,6 +40,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+
       <Route
         path="/"
         element={
