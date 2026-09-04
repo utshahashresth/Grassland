@@ -6,12 +6,30 @@
  * redesigned dashboard matches the design system's `.dc.html` layout and copy.
  */
 
+import NepaliDate from 'nepali-date-converter'
 import { VILLA_SPEC, type VillaState } from './data'
 
 export const MONTHS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ]
+
+/* ---- Bikram Sambat helpers (booking calendar only) ------------------- */
+
+export const NEPALI_MONTHS = [
+  'बैशाख', 'जेठ', 'असार', 'श्रावण', 'भाद्र', 'आश्विन',
+  'कार्तिक', 'मंसिर', 'पौष', 'माघ', 'फाल्गुण', 'चैत्र',
+]
+
+/** Short weekday labels, Sunday-first — matches Nepali calendar convention. */
+export const NEPALI_WEEKDAYS = ['आ', 'सो', 'मं', 'बु', 'बि', 'शु', 'श']
+
+const NEPALI_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९']
+
+/** Renders an integer with Devanagari (Nepali) digits. */
+export function toNepaliDigits(n: number): string {
+  return String(n).replace(/[0-9]/g, (d) => NEPALI_DIGITS[Number(d)])
+}
 
 /* ---- bookings by source --------------------------------------------------- */
 
@@ -76,25 +94,30 @@ export const PROFILES: Record<string, [string, string, string, string, string]> 
   'GZR-4470': ['14 Aug 1988', 'Female', 'Filipino', 'P4471882', 'ana.reyes@example.com'],
 }
 
-/* ---- availability calendar ------------------------------------------- */
+/* ---- availability calendar (Bikram Sambat) --------------------------- */
 
 export interface CalDay {
-  /** day-of-month, 1-based */
+  /** day-of-month, 1-based, in the Bikram Sambat calendar */
   date: number
-  /** false for the spill-over days of the neighbouring months */
+  /** BS month index (0 = Baisakh .. 11 = Chaitra) this cell falls in */
+  month: number
+  /** false for the spill-over days of the neighbouring BS months */
   inMonth: boolean
   /** villas free that night, 0..total */
   free: number
   /** total villas */
   total: number
-  /** true for the dashboard's "today" (12 Mar 2026) */
+  /** true for the dashboard's "today" */
   today: boolean
   /** true once the night is in the past */
   past: boolean
 }
 
-/** The dashboard's fixed "today". */
+/** The dashboard's fixed "today" (AD). */
 export const TODAY = new Date(2026, 2, 12)
+
+/** `TODAY` expressed in the Bikram Sambat calendar. */
+export const TODAY_BS = NepaliDate.fromAD(TODAY)
 
 function freeOn(cur: Date, total: number): number {
   /* Cheap deterministic hash → 0..1, so the calendar never shuffles. */
@@ -107,25 +130,30 @@ function freeOn(cur: Date, total: number): number {
 }
 
 /**
- * Deterministic villa-availability for the 6-week grid around one month, so
- * the calendar reads the same on every render. In production this is a single
- * API call returning free-room counts per night.
+ * Deterministic villa-availability for the 6-week grid around one Bikram
+ * Sambat month, so the calendar reads the same on every render. In
+ * production this is a single API call returning free-room counts per
+ * night; `bsYear`/`bsMonth` are BS fields (bsMonth: 0 = Baisakh).
  */
-export function availabilityMonth(year: number, month: number): CalDay[] {
+export function availabilityMonth(bsYear: number, bsMonth: number): CalDay[] {
   const total = VILLA_SPEC.length
-  /* Monday-first: start on the Monday on/before the 1st. */
-  const lead = (new Date(year, month, 1).getDay() + 6) % 7
-  const start = new Date(year, month, 1 - lead)
+  /* Sunday-first, matching Nepali calendar convention. */
+  const lead = new NepaliDate(bsYear, bsMonth, 1).getDay()
 
   return Array.from({ length: 42 }, (_, i) => {
-    const cur = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)
+    const cur = new NepaliDate(bsYear, bsMonth, 1 - lead + i)
+    const curAD = cur.toJsDate()
     return {
       date: cur.getDate(),
-      inMonth: cur.getMonth() === month,
-      free: freeOn(cur, total),
+      month: cur.getMonth(),
+      inMonth: cur.getMonth() === bsMonth,
+      free: freeOn(curAD, total),
       total,
-      today: cur.getTime() === TODAY.getTime(),
-      past: cur.getTime() < TODAY.getTime(),
+      today:
+        cur.getYear() === TODAY_BS.getYear() &&
+        cur.getMonth() === TODAY_BS.getMonth() &&
+        cur.getDate() === TODAY_BS.getDate(),
+      past: curAD.getTime() < TODAY.getTime(),
     }
   })
 }

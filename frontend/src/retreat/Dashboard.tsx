@@ -6,13 +6,15 @@ import { ManagerShell } from './Shell'
 import { VILLA_SPEC, type BookingRow, type VillaState } from './data'
 import {
   AVAIL_SETS,
-  MONTHS,
+  NEPALI_MONTHS,
+  NEPALI_WEEKDAYS,
   SOURCE_COLORS,
   SOURCE_SETS,
   SOURCE_TOTALS,
-  TODAY,
+  TODAY_BS,
   availabilityMonth,
   chartSeries,
+  toNepaliDigits,
   tonightAvail,
   type AvailRange,
   type SourceRange,
@@ -377,9 +379,7 @@ function BookingsBySourceCard() {
   )
 }
 
-/* ---- availability calendar ------------------------------------- */
-
-const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+/* ---- availability calendar (Bikram Sambat) ---------------------- */
 
 /** Colour a day by how many villas are still free that night. */
 function dayFill(free: number): { bg: string; fg: string; border: string } {
@@ -397,8 +397,8 @@ const LEGEND: [string, string, boolean][] = [
 ]
 
 function AvailabilityCalendarCard() {
-  const cells = availabilityMonth(TODAY.getFullYear(), TODAY.getMonth())
-  const monthLabel = `${MONTHS[TODAY.getMonth()]} ${TODAY.getFullYear()}`
+  const cells = availabilityMonth(TODAY_BS.getYear(), TODAY_BS.getMonth())
+  const monthLabel = `${NEPALI_MONTHS[TODAY_BS.getMonth()]} ${toNepaliDigits(TODAY_BS.getYear())}`
   const upcoming = cells.filter((c) => c.inMonth && !c.past)
   const openNights = upcoming.filter((c) => c.free > 0).length
 
@@ -417,11 +417,11 @@ function AvailabilityCalendarCard() {
       </div>
 
       <p className="mt-1.5 text-[12.5px] text-[var(--text-secondary)]">
-        {openNights} of {upcoming.length} nights left still have a villa free.
+        {toNepaliDigits(openNights)} of {toNepaliDigits(upcoming.length)} nights left still have a villa free.
       </p>
 
       <div className="mt-3.5 grid grid-cols-7 gap-1.5">
-        {WEEKDAYS.map((w, i) => (
+        {NEPALI_WEEKDAYS.map((w, i) => (
           <span
             key={i}
             className="text-center text-[10px] font-semibold tracking-[0.04em] text-[var(--text-secondary)] uppercase"
@@ -444,7 +444,7 @@ function AvailabilityCalendarCard() {
                 className="flex items-start justify-center pt-1.5 text-[12px] text-[var(--text-placeholder)]"
                 style={{ fontFamily: mono }}
               >
-                {c.date}
+                {toNepaliDigits(c.date)}
               </span>
             )
           const t = dayFill(c.free)
@@ -460,9 +460,9 @@ function AvailabilityCalendarCard() {
                 opacity: c.past ? 0.4 : 1,
                 fontFamily: mono,
               }}
-              title={`${c.date} ${monthLabel} — ${c.free} of ${c.total} villas free`}
+              title={`${toNepaliDigits(c.date)} ${NEPALI_MONTHS[c.month]} ${toNepaliDigits(TODAY_BS.getYear())} — ${toNepaliDigits(c.free)} of ${toNepaliDigits(c.total)} villas free`}
             >
-              {c.date}
+              {toNepaliDigits(c.date)}
             </span>
           )
         })}
